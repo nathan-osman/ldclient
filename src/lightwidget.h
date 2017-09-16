@@ -22,16 +22,36 @@
  * IN THE SOFTWARE.
  */
 
-#include <QApplication>
+#ifndef LIGHTWIDGET_H
+#define LIGHTWIDGET_H
 
-#include "mainwindow.h"
+#include <QWidget>
 
-int main(int argc, char **argv)
+/**
+ * @brief Widget displaying a light that can be lit
+ */
+class LightWidget : public QWidget
 {
-    QApplication a(argc, argv);
+    Q_OBJECT
+    Q_PROPERTY(bool lit READ lit WRITE setLit)
 
-    MainWindow mainWindow;
-    mainWindow.show();
+public:
 
-    return a.exec();
-}
+    LightWidget(QWidget *parent = nullptr);
+
+    bool lit() const;
+
+public Q_SLOTS:
+
+    void setLit(bool lit);
+
+protected:
+
+    virtual void paintEvent(QPaintEvent *event);
+
+private:
+
+    bool mLit;
+};
+
+#endif // LIGHTWIDGET_H

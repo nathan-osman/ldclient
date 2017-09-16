@@ -22,16 +22,22 @@
  * IN THE SOFTWARE.
  */
 
-#include <QApplication>
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
-#include "mainwindow.h"
+#include <QMainWindow>
 
-int main(int argc, char **argv)
+class MainWindow : public QMainWindow
 {
-    QApplication a(argc, argv);
+    Q_OBJECT
 
-    MainWindow mainWindow;
-    mainWindow.show();
+public:
 
-    return a.exec();
-}
+    MainWindow();
+
+private Q_SLOTS:
+
+    //...
+};
+
+#endif // MAINWINDOW_H

@@ -22,16 +22,45 @@
  * IN THE SOFTWARE.
  */
 
-#include <QApplication>
+#include <QColor>
+#include <QPainter>
+#include <QPoint>
+#include <QRadialGradient>
 
-#include "mainwindow.h"
+#include "lightwidget.h"
 
-int main(int argc, char **argv)
+LightWidget::LightWidget(QWidget *parent)
+    : QWidget(parent),
+      mLit(false)
 {
-    QApplication a(argc, argv);
+}
 
-    MainWindow mainWindow;
-    mainWindow.show();
+bool LightWidget::lit() const
+{
+    return mLit;
+}
 
-    return a.exec();
+void LightWidget::setLit(bool lit)
+{
+    mLit = lit;
+    repaint();
+}
+
+void LightWidget::paintEvent(QPaintEvent *)
+{
+    QPoint p(width() / 2, height() / 2);
+    int circleRad = qMin(p.x(), p.y()) - 4;
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    QRadialGradient gradient(p.x(), p.y(), circleRad * 2, p.x(), p.y());
+    gradient.setColorAt(0, mLit ?
+        QColor::fromRgbF(1, 0.25, 0.25) :
+        QColor::fromRgbF(0.3, 0.3, 0.3)
+    );
+    gradient.setColorAt(1, Qt::black);
+
+    painter.setBrush(QBrush(gradient));
+    painter.drawEllipse(p, circleRad, circleRad);
 }

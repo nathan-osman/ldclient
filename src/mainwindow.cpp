@@ -23,15 +23,31 @@
  */
 
 #include <QApplication>
+#include <QCheckBox>
+#include <QDesktopWidget>
+#include <QGridLayout>
+#include <QStyle>
+#include <QWidget>
 
+#include "lightwidget.h"
 #include "mainwindow.h"
 
-int main(int argc, char **argv)
+MainWindow::MainWindow()
 {
-    QApplication a(argc, argv);
+    setWindowTitle(tr("ldclient"));
+    resize(640, 480);
+    move(QApplication::desktop()->availableGeometry().center() - rect().center());
 
-    MainWindow mainWindow;
-    mainWindow.show();
+    QWidget *centralWidget = new QWidget;
+    setCentralWidget(centralWidget);
 
-    return a.exec();
+    LightWidget *lightWidget = new LightWidget;
+    QCheckBox *checkBox = new QCheckBox;
+
+    connect(checkBox, &QCheckBox::toggled, lightWidget, &LightWidget::setLit);
+
+    QGridLayout *mainLayout = new QGridLayout;
+    mainLayout->addWidget(lightWidget, 0, 0, 1, 1);
+    mainLayout->addWidget(checkBox, 1, 0, 1, 1);
+    centralWidget->setLayout(mainLayout);
 }

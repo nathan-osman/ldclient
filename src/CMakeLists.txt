@@ -1,5 +1,7 @@
 set(SRC
+    lightwidget.cpp
     main.cpp
+    mainwindow.cpp
 )
 
 add_executable(ldclient WIN32 ${SRC})
