@@ -41,6 +41,14 @@ EditorWidget::EditorWidget()
     setLayout(mVBoxLayout);
 }
 
+void EditorWidget::setState(const QString &name, bool state)
+{
+    LightWidget *widget = mLights.value(name);
+    if (widget) {
+        widget->setLit(state);
+    }
+}
+
 void EditorWidget::onAddLight()
 {
     LightWidget *lightWidget = new LightWidget(tr("light%1").arg(mLightNumber++));

@@ -25,15 +25,37 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <QWebSocketServer>
+#include <QObject>
 
-class Server : public QWebSocketServer
+class QWebSocket;
+class QWebSocketServer;
+
+class Server : public QObject
 {
     Q_OBJECT
 
 public:
 
     explicit Server(QObject *parent = nullptr);
+    virtual ~Server();
+
+    bool start(quint16 port);
+    void stop();
+
+Q_SIGNALS:
+
+    void stateChanged(const QString &name, bool state);
+
+private Q_SLOTS:
+
+    void onNewConnection();
+    void onDisconnected();
+    void onTextMessageReceived(const QString &message);
+
+private:
+
+    QWebSocketServer *mServer;
+    QWebSocket *mSocket;
 };
 
 #endif // SERVER_H

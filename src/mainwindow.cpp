@@ -25,13 +25,14 @@
 #include <QAction>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QInputDialog>
 #include <QMenu>
 #include <QMenuBar>
+#include <QMessageBox>
 
 #include "editorwidget.h"
 #include "mainwindow.h"
 #include "server.h"
-#include "serverdialog.h"
 
 MainWindow::MainWindow()
     : mStartServer(new QAction(tr("St&art server..."), this)),
@@ -41,6 +42,8 @@ MainWindow::MainWindow()
 {
     connect(mStartServer, &QAction::triggered, this, &MainWindow::startServer);
     connect(mStopServer, &QAction::triggered, this, &MainWindow::stopServer);
+
+    connect(mServer, &Server::stateChanged, mEditor, &EditorWidget::setState);
 
     mStopServer->setDisabled(true);
 
@@ -62,10 +65,31 @@ MainWindow::MainWindow()
 
 void MainWindow::startServer()
 {
-    ServerDialog().exec();
+    bool ok = false;
+    int port = QInputDialog::getInt(
+        this,
+        tr("Start Server"),
+        tr("Port:"),
+        8000,
+        1,
+        65535,
+        1,
+        &ok
+    );
+
+    if (ok) {
+        if (mServer->start(port)) {
+            mStartServer->setEnabled(false);
+            mStopServer->setEnabled(true);
+        } else {
+            QMessageBox::critical(this, tr("Error"), tr("Unable to bind to port."));
+        }
+    }
 }
 
 void MainWindow::stopServer()
 {
-    //...
+    mServer->stop();
+    mStartServer->setEnabled(true);
+    mStopServer->setEnabled(false);
 }

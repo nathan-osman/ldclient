@@ -5,7 +5,6 @@ set(SRC
     main.cpp
     mainwindow.cpp
     server.cpp
-    serverdialog.cpp
 )
 
 add_executable(ldclient WIN32 ${SRC})

@@ -43,6 +43,10 @@ public:
 
     EditorWidget();
 
+public Q_SLOTS:
+
+    void setState(const QString &name, bool state);
+
 private Q_SLOTS:
 
     void onAddLight();

@@ -22,9 +22,61 @@
  * IN THE SOFTWARE.
  */
 
+#include <QHostAddress>
+#include <QWebSocket>
+#include <QWebSocketServer>
+
 #include "server.h"
 
 Server::Server(QObject *parent)
-    : QWebSocketServer("", QWebSocketServer::NonSecureMode, parent)
+    : QObject(parent),
+      mServer(new QWebSocketServer("", QWebSocketServer::NonSecureMode, this)),
+      mSocket(nullptr)
 {
+    connect(mServer, &QWebSocketServer::newConnection, this, &Server::onNewConnection);
+}
+
+Server::~Server()
+{
+    if (mSocket) {
+        mSocket->deleteLater();
+    }
+}
+
+bool Server::start(quint16 port)
+{
+    return mServer->listen(QHostAddress::Any, port);
+}
+
+void Server::stop()
+{
+    mServer->close();
+}
+
+void Server::onNewConnection()
+{
+    QWebSocket *socket = mServer->nextPendingConnection();
+
+    // Abort if there is already an active connection
+    if (mSocket) {
+        socket->abort();
+        socket->deleteLater();
+        return;
+    }
+
+    connect(socket, &QWebSocket::disconnected, this, &Server::onDisconnected);
+    connect(socket, &QWebSocket::textMessageReceived, this, &Server::onTextMessageReceived);
+
+    mSocket = socket;
+}
+
+void Server::onDisconnected()
+{
+    mSocket->deleteLater();
+    mSocket = nullptr;
+}
+
+void Server::onTextMessageReceived(const QString &message)
+{
+    //...
 }
