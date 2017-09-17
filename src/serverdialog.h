@@ -22,50 +22,18 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIGHTWIDGET_H
-#define LIGHTWIDGET_H
+#ifndef SERVERDIALOG_H
+#define SERVERDIALOG_H
 
-#include <QWidget>
+#include <QDialog>
 
-class QLabel;
-
-class LEDWidget;
-
-/**
- * @brief LED light that can be renamed
- */
-class LightWidget : public QWidget
+class ServerDialog : public QDialog
 {
     Q_OBJECT
-    Q_PROPERTY(bool lit READ lit WRITE setLit)
-    Q_PROPERTY(QString name READ name WRITE setName)
 
 public:
 
-    LightWidget(const QString &name);
-
-    bool lit() const;
-    void setLit(bool lit);
-
-    QString name() const;
-    void setName(const QString &name);
-
-Q_SIGNALS:
-
-    void renamed(const QString &oldName, const QString &newName);
-    void deleted(const QString &name);
-
-private Q_SLOTS:
-
-    void onRenameClicked();
-    void onDeleteClicked();
-
-private:
-
-    QString mName;
-
-    LEDWidget *mLEDWidget;
-    QLabel *mLabel;
+    ServerDialog();
 };
 
-#endif // LIGHTWIDGET_H
+#endif // SERVERDIALOG_H

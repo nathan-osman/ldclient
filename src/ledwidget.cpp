@@ -22,50 +22,51 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIGHTWIDGET_H
-#define LIGHTWIDGET_H
+#include <QBrush>
+#include <QColor>
+#include <QPainter>
+#include <QPoint>
+#include <QRadialGradient>
 
-#include <QWidget>
+#include "ledwidget.h"
 
-class QLabel;
-
-class LEDWidget;
-
-/**
- * @brief LED light that can be renamed
- */
-class LightWidget : public QWidget
+LEDWidget::LEDWidget(QWidget *parent)
+    : QWidget(parent),
+      mLit(false)
 {
-    Q_OBJECT
-    Q_PROPERTY(bool lit READ lit WRITE setLit)
-    Q_PROPERTY(QString name READ name WRITE setName)
+}
 
-public:
+QSize LEDWidget::sizeHint() const
+{
+    return QSize(32, 32);
+}
 
-    LightWidget(const QString &name);
+bool LEDWidget::lit() const
+{
+    return mLit;
+}
 
-    bool lit() const;
-    void setLit(bool lit);
+void LEDWidget::setLit(bool lit)
+{
+    mLit = lit;
+    repaint();
+}
 
-    QString name() const;
-    void setName(const QString &name);
+void LEDWidget::paintEvent(QPaintEvent *)
+{
+    QPoint p(width() / 2, height() / 2);
+    int circleRad = qMin(p.x(), p.y()) - 4;
 
-Q_SIGNALS:
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
 
-    void renamed(const QString &oldName, const QString &newName);
-    void deleted(const QString &name);
+    QRadialGradient gradient(p.x(), p.y(), circleRad * 2, p.x(), p.y());
+    gradient.setColorAt(0, mLit ?
+        QColor::fromRgbF(1, 0.25, 0.25) :
+        QColor::fromRgbF(0.3, 0.3, 0.3)
+    );
+    gradient.setColorAt(1, Qt::black);
 
-private Q_SLOTS:
-
-    void onRenameClicked();
-    void onDeleteClicked();
-
-private:
-
-    QString mName;
-
-    LEDWidget *mLEDWidget;
-    QLabel *mLabel;
-};
-
-#endif // LIGHTWIDGET_H
+    painter.setBrush(QBrush(gradient));
+    painter.drawEllipse(p, circleRad, circleRad);
+}

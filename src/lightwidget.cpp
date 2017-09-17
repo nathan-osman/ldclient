@@ -22,45 +22,72 @@
  * IN THE SOFTWARE.
  */
 
-#include <QColor>
-#include <QPainter>
-#include <QPoint>
-#include <QRadialGradient>
+#include <QHBoxLayout>
+#include <QInputDialog>
+#include <QLabel>
+#include <QPushButton>
+#include <QSpacerItem>
 
+#include "ledwidget.h"
 #include "lightwidget.h"
 
-LightWidget::LightWidget(QWidget *parent)
-    : QWidget(parent),
-      mLit(false)
+LightWidget::LightWidget(const QString &name)
+    : mName(name),
+      mLEDWidget(new LEDWidget),
+      mLabel(new QLabel(name))
 {
+    QPushButton *renameButton = new QPushButton(tr("Rename"));
+    QPushButton *deleteButton = new QPushButton(tr("Delete"));
+
+    connect(renameButton, &QPushButton::clicked, this, &LightWidget::onRenameClicked);
+    connect(deleteButton, &QPushButton::clicked, this, &LightWidget::onDeleteClicked);
+
+    QHBoxLayout *hboxLayout = new QHBoxLayout;
+    hboxLayout->addWidget(mLEDWidget);
+    hboxLayout->addWidget(mLabel);
+    hboxLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
+    hboxLayout->addWidget(renameButton);
+    hboxLayout->addWidget(deleteButton);
+    setLayout(hboxLayout);
 }
 
 bool LightWidget::lit() const
 {
-    return mLit;
+    return mLEDWidget->lit();
 }
 
 void LightWidget::setLit(bool lit)
 {
-    mLit = lit;
-    repaint();
+    mLEDWidget->setLit(lit);
 }
 
-void LightWidget::paintEvent(QPaintEvent *)
+QString LightWidget::name() const
 {
-    QPoint p(width() / 2, height() / 2);
-    int circleRad = qMin(p.x(), p.y()) - 4;
+    return mName;
+}
 
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
+void LightWidget::setName(const QString &name)
+{
+    emit renamed(mName, name);
+    mLabel->setText(mName = name);
+}
 
-    QRadialGradient gradient(p.x(), p.y(), circleRad * 2, p.x(), p.y());
-    gradient.setColorAt(0, mLit ?
-        QColor::fromRgbF(1, 0.25, 0.25) :
-        QColor::fromRgbF(0.3, 0.3, 0.3)
+void LightWidget::onRenameClicked()
+{
+    QString name = QInputDialog::getText(
+        nullptr,
+        tr("Rename"),
+        tr("Name:"),
+        QLineEdit::Normal,
+        mName
     );
-    gradient.setColorAt(1, Qt::black);
 
-    painter.setBrush(QBrush(gradient));
-    painter.drawEllipse(p, circleRad, circleRad);
+    if (!name.isNull()) {
+        setName(name);
+    }
+}
+
+void LightWidget::onDeleteClicked()
+{
+    emit deleted(mName);
 }

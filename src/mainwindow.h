@@ -27,6 +27,11 @@
 
 #include <QMainWindow>
 
+class QAction;
+
+class EditorWidget;
+class Server;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -37,7 +42,16 @@ public:
 
 private Q_SLOTS:
 
-    //...
+    void startServer();
+    void stopServer();
+
+private:
+
+    QAction *mStartServer;
+    QAction *mStopServer;
+
+    EditorWidget *mEditor;
+    Server *mServer;
 };
 
 #endif // MAINWINDOW_H

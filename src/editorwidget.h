@@ -22,50 +22,39 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIGHTWIDGET_H
-#define LIGHTWIDGET_H
+#ifndef EDITORWIDGET_H
+#define EDITORWIDGET_H
 
+#include <QMap>
 #include <QWidget>
 
-class QLabel;
+class QVBoxLayout;
 
-class LEDWidget;
+class LightWidget;
 
 /**
- * @brief LED light that can be renamed
+ * @brief Editor for adding and removing named lights
  */
-class LightWidget : public QWidget
+class EditorWidget : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY(bool lit READ lit WRITE setLit)
-    Q_PROPERTY(QString name READ name WRITE setName)
 
 public:
 
-    LightWidget(const QString &name);
-
-    bool lit() const;
-    void setLit(bool lit);
-
-    QString name() const;
-    void setName(const QString &name);
-
-Q_SIGNALS:
-
-    void renamed(const QString &oldName, const QString &newName);
-    void deleted(const QString &name);
+    EditorWidget();
 
 private Q_SLOTS:
 
-    void onRenameClicked();
-    void onDeleteClicked();
+    void onAddLight();
+    void onLightRenamed(const QString &oldName, const QString &newName);
+    void onLightDeleted(const QString &name);
 
 private:
 
-    QString mName;
+    QVBoxLayout *mVBoxLayout;
 
-    LEDWidget *mLEDWidget;
-    QLabel *mLabel;
+    int mLightNumber;
+    QMap<QString, LightWidget*> mLights;
 };
 
-#endif // LIGHTWIDGET_H
+#endif // EDITORWIDGET_H

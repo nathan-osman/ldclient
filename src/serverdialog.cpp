@@ -22,50 +22,11 @@
  * IN THE SOFTWARE.
  */
 
-#include <QAction>
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QMenu>
-#include <QMenuBar>
+#include <QVBoxLayout>
 
-#include "editorwidget.h"
-#include "mainwindow.h"
-#include "server.h"
 #include "serverdialog.h"
 
-MainWindow::MainWindow()
-    : mStartServer(new QAction(tr("St&art server..."), this)),
-      mStopServer(new QAction(tr("St&op server"), this)),
-      mEditor(new EditorWidget),
-      mServer(new Server(this))
+ServerDialog::ServerDialog()
 {
-    connect(mStartServer, &QAction::triggered, this, &MainWindow::startServer);
-    connect(mStopServer, &QAction::triggered, this, &MainWindow::stopServer);
-
-    mStopServer->setDisabled(true);
-
-    // Create the menu
-    QMenu *file = menuBar()->addMenu(tr("&File"));
-    file->addAction(mStartServer);
-    file->addAction(mStopServer);
-    file->addSeparator();
-    file->addAction(tr("&Quit"), this, &MainWindow::close);
-
-    // Create the central widget
-    setCentralWidget(mEditor);
-
-    // Set the window title and geometry
-    setWindowTitle(tr("ldclient"));
-    resize(640, 480);
-    move(QApplication::desktop()->availableGeometry().center() - rect().center());
-}
-
-void MainWindow::startServer()
-{
-    ServerDialog().exec();
-}
-
-void MainWindow::stopServer()
-{
-    //...
+    setWindowTitle(tr("Start Server"));
 }

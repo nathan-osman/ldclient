@@ -22,50 +22,38 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIGHTWIDGET_H
-#define LIGHTWIDGET_H
+#ifndef LEDWIDGET_H
+#define LEDWIDGET_H
 
 #include <QWidget>
 
-class QLabel;
-
-class LEDWidget;
-
 /**
- * @brief LED light that can be renamed
+ * @brief LED light that can be dim or lit
  */
-class LightWidget : public QWidget
+class LEDWidget : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool lit READ lit WRITE setLit)
-    Q_PROPERTY(QString name READ name WRITE setName)
 
 public:
 
-    LightWidget(const QString &name);
+    LEDWidget(QWidget *parent = nullptr);
+
+    virtual QSize sizeHint() const;
 
     bool lit() const;
+
+public Q_SLOTS:
+
     void setLit(bool lit);
 
-    QString name() const;
-    void setName(const QString &name);
+protected:
 
-Q_SIGNALS:
-
-    void renamed(const QString &oldName, const QString &newName);
-    void deleted(const QString &name);
-
-private Q_SLOTS:
-
-    void onRenameClicked();
-    void onDeleteClicked();
+    virtual void paintEvent(QPaintEvent *event);
 
 private:
 
-    QString mName;
-
-    LEDWidget *mLEDWidget;
-    QLabel *mLabel;
+    bool mLit;
 };
 
-#endif // LIGHTWIDGET_H
+#endif // LEDWIDGET_H
