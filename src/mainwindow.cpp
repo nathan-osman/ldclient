@@ -25,11 +25,15 @@
 #include <QAction>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QFileDialog>
 #include <QInputDialog>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QVBoxLayout>
+#include <QWidget>
 
+#include "audiowidget.h"
 #include "editorwidget.h"
 #include "mainwindow.h"
 #include "server.h"
@@ -37,25 +41,37 @@
 MainWindow::MainWindow()
     : mStartServer(new QAction(tr("St&art server..."), this)),
       mStopServer(new QAction(tr("St&op server"), this)),
+      mAudio(new AudioWidget),
       mEditor(new EditorWidget),
       mServer(new Server(this))
 {
     connect(mStartServer, &QAction::triggered, this, &MainWindow::startServer);
     connect(mStopServer, &QAction::triggered, this, &MainWindow::stopServer);
 
+    connect(mServer, &Server::audioStarted, mAudio, &AudioWidget::start);
+    connect(mServer, &Server::audioStopped, mAudio, &AudioWidget::stop);
     connect(mServer, &Server::stateChanged, mEditor, &EditorWidget::setState);
 
     mStopServer->setDisabled(true);
 
-    // Create the menu
+    // Create the menus
+
     QMenu *file = menuBar()->addMenu(tr("&File"));
     file->addAction(mStartServer);
     file->addAction(mStopServer);
     file->addSeparator();
     file->addAction(tr("&Quit"), this, &MainWindow::close);
 
+    QMenu *audio = menuBar()->addMenu(tr("&Audio"));
+    audio->addAction(tr("&Load..."), this, &MainWindow::loadAudio);
+
     // Create the central widget
-    setCentralWidget(mEditor);
+    QWidget *widget = new QWidget;
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(mAudio);
+    vboxLayout->addWidget(mEditor);
+    widget->setLayout(vboxLayout);
+    setCentralWidget(widget);
 
     // Set the window title and geometry
     setWindowTitle(tr("ldclient"));
@@ -92,4 +108,12 @@ void MainWindow::stopServer()
     mServer->stop();
     mStartServer->setEnabled(true);
     mStopServer->setEnabled(false);
+}
+
+void MainWindow::loadAudio()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Load File"));
+    if (!filename.isNull()) {
+        mAudio->loadFile(filename);
+    }
 }

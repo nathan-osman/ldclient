@@ -23,6 +23,9 @@
  */
 
 #include <QHostAddress>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QWebSocket>
 #include <QWebSocketServer>
 
@@ -78,5 +81,17 @@ void Server::onDisconnected()
 
 void Server::onTextMessageReceived(const QString &message)
 {
-    //...
+    QJsonObject object = QJsonDocument::fromJson(message.toUtf8()).object();
+    QString name = object.value("name").toString();
+    bool state = object.value("state").toBool();
+
+    if (name == "audio") {
+        if (state) {
+            emit audioStarted();
+        } else {
+            emit audioStopped();
+        }
+    } else {
+        emit stateChanged(name, state);
+    }
 }

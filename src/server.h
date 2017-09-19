@@ -44,6 +44,8 @@ public:
 
 Q_SIGNALS:
 
+    void audioStarted();
+    void audioStopped();
     void stateChanged(const QString &name, bool state);
 
 private Q_SLOTS:

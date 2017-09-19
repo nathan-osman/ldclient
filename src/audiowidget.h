@@ -22,40 +22,41 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef AUDIOWIDGET_H
+#define AUDIOWIDGET_H
 
-#include <QMainWindow>
+#include <QWidget>
 
-class QAction;
+class QMediaPlayer;
+class QLabel;
+class QSlider;
 
-class AudioWidget;
-class EditorWidget;
-class Server;
-
-class MainWindow : public QMainWindow
+class AudioWidget : public QWidget
 {
     Q_OBJECT
 
 public:
 
-    MainWindow();
+    AudioWidget();
+
+    void loadFile(const QString &filename);
+
+public Q_SLOTS:
+
+    void start();
+    void stop();
 
 private Q_SLOTS:
 
-    void startServer();
-    void stopServer();
-
-    void loadAudio();
+    void onDurationChanged(qint64 duration);
+    void onPositionChanged(qint64 position);
 
 private:
 
-    QAction *mStartServer;
-    QAction *mStopServer;
+    QMediaPlayer *mPlayer;
 
-    AudioWidget *mAudio;
-    EditorWidget *mEditor;
-    Server *mServer;
+    QLabel *mLabel;
+    QSlider * mSlider;
 };
 
-#endif // MAINWINDOW_H
+#endif // AUDIOWIDGET_H
